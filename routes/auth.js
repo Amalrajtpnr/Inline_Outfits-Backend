@@ -3,7 +3,6 @@ const User = require("../models/user.js");
 const bcrypt = require("bcrypt");
 const apiKeyMiddleware = require("../middleware/apikey.js");
 
-
 //Register
 router.post("/", async (req, res) => {
   try {
@@ -47,21 +46,23 @@ router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res.status(404).json("User not found");
+      return res.status(200).json({ error: "User not found" });
     }
 
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
     if (!validPassword) {
-      return res.status(400).json("Wrong password");
+      return res.status(200).json({ error: "Wrong password" });
     }
 
     // Password is valid, authentication successful
     return res.status(200).json(user);
   } catch (error) {
-    res.status(500).json(error);
+    res.status(200).json(error);
   }
 });
-
 
 //delete user
 router.delete("/:id", async (req, res) => {
